@@ -1,0 +1,31 @@
+# Node.js dependencies
+/node_modules
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files
+.env
+
+# Build output
+/dist
+/build
+
+# Dependency directories
+.babel_cache
+
+# IDEs and text editors
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Optional: Ignore the debug folder or other directories you don’t want in version control
+/debug
+
+# Optional: Ignore package-lock.json or yarn.lock (if you're using a package manager that doesn't rely on lock files)
+# package-lock.json
+# yarn.lock

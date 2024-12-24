@@ -13,10 +13,12 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:3000', // Replace with your frontend's URL
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], // Specify allowed methods
-    credentials: true // Allow cookies if needed
-  }));
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  credentials: true,
+  exposedHeaders: ['Content-Disposition'], // Add this line
+}));
+
 app.use('/uploads', express.static('uploads'));
 
 app.use('/api/auth', authRoutes);
