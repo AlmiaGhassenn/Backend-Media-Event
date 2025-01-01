@@ -7,6 +7,7 @@ const File = require('../models/File');
 const path = require('path');
 const router = express.Router();
 const fs = require('fs');
+const mongoose = require('mongoose');
 const AdmZip = require('adm-zip');
 
 // Get Shared Folders for Client
@@ -53,6 +54,38 @@ router.get('/files/:fileId', protect, async (req, res) => {
     res.status(500).json({ message: 'Server error while downloading file' });
   }
 });
+
+// Route to preview a file
+router.get('/files/preview/:fileId', async (req, res) => {
+  try {
+    const { fileId } = req.params;
+    
+    // Validate the fileId to check if it's a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(fileId)) {
+      return res.status(400).send("Invalid file ID");
+    }
+
+    // Fetch the file from the database
+    const file = await File.findById(fileId);
+
+    if (!file) {
+      return res.status(404).send("File not found");
+    }
+
+    // Check if the file URL exists
+    if (!file.url) {
+      return res.status(400).send("File URL not found");
+    }
+
+    // Redirect to the file URL or send the file as a response
+    res.redirect(file.url); // or use file.url directly if serving from a different location
+
+  } catch (error) {
+    console.error("Error fetching file preview:", error);
+    res.status(500).send("Internal server error");
+  }
+});
+
 
 // Download all files in a folder
 router.get('/files/folder/:folderId', protect, async (req, res) => {

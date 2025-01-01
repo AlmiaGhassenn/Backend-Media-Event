@@ -117,4 +117,42 @@ router.get('/', protect, admin, async (req, res) => {
   }
 });
 
+// Delete Folder
+router.delete('/folders/:folderId', protect, admin, async (req, res) => {
+  try {
+    const folder = await Folder.findById(req.params.folderId);
+    if (!folder) {
+      return res.status(404).json({ message: 'Folder not found' });
+    }
+
+    // Optionally, delete the files associated with the folder
+    await File.deleteMany({ folder: folder._id });
+
+    // Delete the folder itself
+    await Folder.findByIdAndDelete(req.params.folderId);
+
+    res.status(200).json({ message: 'Folder deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error deleting folder' });
+  }
+});
+
+// Delete User
+router.delete('/users/:userId', protect, admin, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    await User.findByIdAndDelete(req.params.userId);
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error deleting user' });
+  }
+});
+
+
 module.exports = router;
