@@ -138,6 +138,44 @@ router.delete('/folders/:folderId', protect, admin, async (req, res) => {
   }
 });
 
+// Delete File from Folder
+router.delete('/files/:folderId/:fileId', protect, admin, async (req, res) => {
+  try {
+    const { folderId, fileId } = req.params;
+
+    // Find the folder
+    const folder = await Folder.findById(folderId);
+    if (!folder) {
+      return res.status(404).json({ message: 'Folder not found' });
+    }
+
+    // Find the file inside the folder
+    const file = await File.findById(fileId);
+    if (!file) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
+    // Remove the file from the folder's files array
+    folder.files = folder.files.filter((fileId) => fileId.toString() !== fileId);
+    await folder.save();
+
+    // Delete the file from the File collection
+    await File.findByIdAndDelete(fileId);
+
+    // Optionally, you can delete the physical file from the server (ensure it exists)
+    const fs = require('fs');
+    const filePath = `uploads/${file.filename}`;
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath); // Delete the file from the server
+    }
+
+    res.status(200).json({ message: 'File deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error deleting file' });
+  }
+});
+
 // Delete User
 router.delete('/users/:userId', protect, admin, async (req, res) => {
   try {
